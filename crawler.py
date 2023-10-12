@@ -4,7 +4,15 @@ from soup import scrape_web_page
 import requests
 from bs4 import BeautifulSoup
 
-#Función para obtener los enlaces de una página
+
+def is_valid_link(href):
+    # Lista de extensiones de archivo que queremos evitar
+    invalid_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.zip', '.rar', '.rst', '.tar', '.gz', '.whl', '.md']
+    for ext in invalid_extensions:
+        if href.endswith(ext):
+            return False
+    return True
+
 def get_links(url, max_depth, depth=1):
     if depth > max_depth:
         return []
@@ -22,8 +30,8 @@ def get_links(url, max_depth, depth=1):
         for link in links:
             #Obtenemos el atributo href de cada enlace
             href = link.get('href')
-            #Si el enlace comienza con http
-            if href and href.startswith('http'):
+            #Si el enlace comienza con http y es válido, lo agregamos a la lista
+            if href and href.startswith('http') and is_valid_link(href):
                 #Si el enlace no está en la lista de enlaces
                 if href not in links_list:
                     #Agregamos el enlace a la lista
@@ -37,7 +45,6 @@ def get_links(url, max_depth, depth=1):
     else:
         #Retornamos 
         return []
-
 
 
 #Le pedimos al usuario que ingrese el enlace inicial y el numero maximo de enlaces
