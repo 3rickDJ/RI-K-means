@@ -1,14 +1,20 @@
+import requests
 from bs4 import BeautifulSoup
 import re
-# html_doc = None
-with open('pagina.html', 'r', encoding="utf-8") as f:
-    html_doc = f.read()
-soup = BeautifulSoup(html_doc, 'html.parser')
-# print(soup.prettify())
-print("-"*80)
-# title, desc = soup.head.title.get_text(), soup.head.meta.get('charset')
-pagina_txt = soup.body.get_text()
-pagina_txt = re.sub(r'[^a-zA-Z0-9]+', ' ', pagina_txt)
-# pagina_txt = '\n'.join([ll.rstrip() for ll in pagina_txt.splitlines() if ll.strip()])
-with open('pagina2.txt', 'w' ) as f:
-    f.write(pagina_txt)
+#Funcion para realizar el scraping, pasandole como parametro la url
+def scrape_web_page(url):
+    #Obtenemos el contenido de la página
+    response = requests.get(url)
+    #Si el código de estado es 200, es decir, si se pudo acceder a la página
+    if response.status_code == 200:
+        #Creamos el objeto soup con el contenido de la página
+        soup = BeautifulSoup(response.content, 'html.parser')
+        #Obtenemos el texto de la página
+        pagina_txt = soup.body.get_text()
+        #Eliminamos los saltos de línea y los espacios en blanco al inicio y al final
+        pagina_txt = re.sub(r'[^a-zA-Z0-9]+', ' ', pagina_txt)
+        #Retornamos el texto de la página
+        return pagina_txt
+    else:
+        #Si no se pudo acceder a la página, retornamos None
+        return None
