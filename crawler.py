@@ -1,8 +1,10 @@
 #Importamos la clase para realizar el scraping
+import json
 from soup import scrape_web_page
 #Ahora realizamos el procedimiento para el crawler
 import requests
 from bs4 import BeautifulSoup
+#Libreria para admninistrar expresiones regulares
 
 
 def is_valid_link(href):
@@ -46,8 +48,7 @@ def get_links(url, max_depth, depth=1):
         #Retornamos 
         return []
 
-
-#Le pedimos al usuario que ingrese el enlace inicial y el numero maximo de enlaces
+#Le pedimos al usuario que ingrese el enlace inici  al y el numero maximo de enlaces
 url = input("Ingrese el enlace inicial: ")
 max_depth = int(input("Ingrese el número máximo de enlaces: "))
 #Llamamos a la función get_links para obtener los enlaces
@@ -59,12 +60,28 @@ corpus_data = []
 for link in links:
     print(f"Scrapeando: {link}")
     data = scrape_web_page(link)
-    if data:
-        corpus_data.append(data)
+    dic = {'url': link, 'data': data}	
+    if link not in corpus_data:
+        corpus_data.append(dic)
         
-# Guardar los datos en un archivo
+# Guardar los datos en un archivo JSON
+#Contador para nombrar los archivos
+contador = 0
+#Recorremos la lista de datos
+for data in corpus_data:
+    with open(str(contador)+".json", 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+    contador += 1
+
+#Creamos una lista para almacenar el texto de cada página
+corpus = list()
+for data in corpus_data:
+    corpus.append(data['data'])
+
+#Guardamos todos los datos en un archivo txt
 with open('Corpus.txt', 'w', encoding='utf-8') as f:
-    for data in corpus_data:
-        f.write(data + '\n\n')  # Agrega una línea en blanco entre los datos de cada página
-#Imprimimos un mensaje de éxito
+    for data in corpus:
+        if data != None:
+            f.write(data + '\n\n')
+
 print("Scraping completado. Los datos han sido guardados en 'Corpus.txt'")    
