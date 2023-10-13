@@ -17,7 +17,7 @@ def get_links(url, max_depth, depth=1):
     if depth > max_depth:
         return []
     #Obtenemos el contenido de la página
-    response = requests.get(url)
+    response = requests.get(url)  
     #Si el código de estado es 200, es decir, si se pudo acceder a la página
     if response.status_code == 200:
         #Creamos el objeto soup
