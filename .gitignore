@@ -1,6 +1,6 @@
-# Created by https://www.toptal.com/developers/gitignore/api/linux,windows,python
-# Edit at https://www.toptal.com/developers/gitignore?templates=linux,windows,python
-# Hola, soy Dwis
+# Created by https://www.toptal.com/developers/gitignore/api/linux,python,windows
+# Edit at https://www.toptal.com/developers/gitignore?templates=linux,python,windows
+
 ### Linux ###
 *~
 
@@ -214,6 +214,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/linux,windows,python
-pagina.txt
-pagina2.txt
+# End of https://www.toptal.com/developers/gitignore/api/linux,python,windows
