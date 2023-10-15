@@ -1,8 +1,6 @@
-from pathlib import Path
 import scrapy
 from scrapy.loader import ItemLoader
 from roboto.items import RobotoItem
-from scrapy.exceptions import CloseSpider
 
 
 class QuotesSpider(scrapy.Spider):
