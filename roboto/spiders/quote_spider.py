@@ -7,9 +7,9 @@ from scrapy.exceptions import CloseSpider
 
 class QuotesSpider(scrapy.Spider):
     name = "quotes"
-    start_urls = ["http://localhost:8080/"]
+    start_urls = ["http://quotes.toscrape.com/"]
     custom_settings = {
-            'DEPTH_LIMIT': 3
+            'DEPTH_LIMIT': 2
             }
 
     def parse(self, response, depth=1):
