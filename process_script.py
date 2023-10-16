@@ -1,9 +1,11 @@
+#Lirebrias necesarias para el funcionamiento del programa
 import process_text
 import json
 import pandas as pd
 import re
 import math
 
+#Funcion para cargar los datos generados por quote_spider.py
 def load_data():
     with open('quotes.json') as f:
         data = json.load(f)
@@ -14,27 +16,28 @@ def load_data():
         corpus.append(process_data)
     return corpus
 
+#Funcion para guardar los tokens del corpus
 def save_corpus_tokens(corpus):
-    corpus_tokens = [d.tokens for d in corpus]
-    flat_tokens = set([ token for tokens in corpus_tokens for token in tokens ])
+    corpus_tokens = [d.tokens for d in corpus] #Lista de tokens de cada documento
+    flat_tokens = set([ token for tokens in corpus_tokens for token in tokens ]) #Lista de tokens sin repetir
     with open('corpus_tokens.txt', 'w') as f:
             f.write(' '.join(flat_tokens))
     return flat_tokens
-
+#Funcion para guardar las stopwords del corpus
 def save_corpus_terms(corpus, flat_tokens):
     corpus_terms = [d.terms for d in corpus]
     terms = set([ term for terms in corpus_terms for term in terms ])
     with open('corpus_terms.txt', 'w') as f:
             f.write(' '.join(terms))
     return terms
-
+#Funcion para guardar los stems del corpus
 def save_corpus_stems(corpus, flat_tokens):
     corpus_stems = [d.stems for d in corpus]
     stems = list(set([ stem for stems in corpus_stems for stem in stems ]))
     with open('corpus_stems.txt', 'w') as f:
             f.write(' '.join(stems))
     return stems
-
+#Funcion para guardar la matriz del corpus 
 def save_matrix(corpus, stems_corpus):
     table = []
     for d in corpus:
@@ -44,15 +47,16 @@ def save_matrix(corpus, stems_corpus):
                 row[s] = True
         table.append(row)
     return table
-
+#Funcion para realizar la matriz tf-idf y guardar la matriz 
 def save_matrix_tf_idf(matrix, stems_corpus):
-    df = pd.DataFrame(matrix, index=range(len(matrix)), columns=stems_corpus)
-    df = df.fillna(False)
-    N = len(matrix)
-    idf = df.sum(axis=0).apply(lambda x: math.log(N / (1 + x)))
+    df = pd.DataFrame(matrix, index=range(len(matrix)), columns=stems_corpus) #Matriz de terminos
+    df = df.fillna(False) #Llenamos los valores nulos con False
+    N = len(matrix)       #Numero de documentos
+    idf = df.sum(axis=0).apply(lambda x: math.log(N / (1 + x))) 
     tf_idf = df.apply(lambda x: x * idf, axis=1)
     return tf_idf, idf
 
+#Convertimos nuestra consulta en un vector
 def convert_query_to_vector(query, stems_corpus, idf):
     row = dict()
     for s in query.stems:
@@ -63,7 +67,7 @@ def convert_query_to_vector(query, stems_corpus, idf):
     return row
 
 
-
+#Funcion principal
 def main():
     corpus = load_data()
     tokens = save_corpus_tokens(corpus)
