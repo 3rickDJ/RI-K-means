@@ -1,6 +1,7 @@
 import process_text
 import json
 import pandas as pd
+import re
 import math
 
 def load_data():
@@ -50,7 +51,16 @@ def save_matrix_tf_idf(matrix, stems_corpus):
     N = len(matrix)
     idf = df.sum(axis=0).apply(lambda x: math.log(N / (1 + x)))
     tf_idf = df.apply(lambda x: x * idf, axis=1)
-    return tf_idf
+    return tf_idf, idf
+
+def convert_query_to_vector(query, stems_corpus, idf):
+    row = dict()
+    for s in query.stems:
+        if s in stems_corpus:
+            row[s] = 1
+
+    row = pd.DataFrame([row], columns=stems_corpus).fillna(0).apply(lambda x: x * idf, axis = 1)
+    return row
 
 
 
@@ -60,12 +70,22 @@ def main():
     terms = save_corpus_terms(corpus, tokens)
     stems = save_corpus_stems(corpus, tokens)
     matrix = save_matrix(corpus, stems)
-    tf_idf = save_matrix_tf_idf(matrix, stems)
+    tf_idf, idf = save_matrix_tf_idf(matrix, stems)
     print(tf_idf)
+    k = 3
+    query = "I have not failed. I've just found 10,000 ways that won't work.".lower().strip()
+    query = re.split(r"[^a-z0-9]+", query)
+    # import dbg
+    import pudb; pudb.set_trace()
+    query = process_text.ProcessData('query', query)
+    query_vector = convert_query_to_vector(query, stems, idf)
+    tf_idf_query = pd.concat([tf_idf, query_vector], ignore_index=True)
+    print(tf_idf_query)
 
 
 
     print("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
 
 
-
+if __name__ == "__main__":
+    main()
