@@ -1,4 +1,4 @@
-#Lirebrias necesarias para el funcionamiento del programa
+#Librerias necesarias para el funcionamiento del programa
 import process_text
 import json
 import pandas as pd
@@ -69,21 +69,25 @@ def convert_query_to_vector(query, stems_corpus, idf):
 
 #Funcion principal
 def main():
-    corpus = load_data()
-    tokens = save_corpus_tokens(corpus)
-    terms = save_corpus_terms(corpus, tokens)
-    stems = save_corpus_stems(corpus, tokens)
-    matrix = save_matrix(corpus, stems)
-    tf_idf, idf = save_matrix_tf_idf(matrix, stems)
+    corpus = load_data() #Cargamos los datos
+    tokens = save_corpus_tokens(corpus) #Guardamos los tokens
+    terms = save_corpus_terms(corpus, tokens) #Guardamos los stopwords
+    stems = save_corpus_stems(corpus, tokens) #Guardamos los stems
+    matrix = save_matrix(corpus, stems) #Esta matriz sirve para contar las veces que aparece cada termino en cada documento
+    tf_idf, idf = save_matrix_tf_idf(matrix, stems) #Y hacemos la matriz tf-idf
+    #Guardamos la matriz tf-idf en un archivo csv
+    tf_idf.to_csv('tf_idf.csv', index=False)
     print(tf_idf)
-    k = 3
+    k = 3   #Numero de clusters
     query = "I have not failed. I've just found 10,000 ways that won't work.".lower().strip()
-    query = re.split(r"[^a-z0-9]+", query)
+    query = re.split(r"[^a-z0-9]+", query) 
     # import dbg
-    import pudb; pudb.set_trace()
-    query = process_text.ProcessData('query', query)
-    query_vector = convert_query_to_vector(query, stems, idf)
-    tf_idf_query = pd.concat([tf_idf, query_vector], ignore_index=True)
+    #import pudb; pudb.set_trace()
+    query = process_text.ProcessData('query', query) #Procesamos la consulta aplicando stopwords y stems
+    query_vector = convert_query_to_vector(query, stems, idf) #Obtenemos un vector de la consulta
+    tf_idf_query = pd.concat([tf_idf, query_vector], ignore_index=True) #Concatenamos la matriz tf-idf con el vector de la consulta
+    #Sobreescribimos la matriz tf-idf en un archivo csv
+    tf_idf_query.to_csv('tf_idf.csv', index=False)
     print(tf_idf_query)
 
 
