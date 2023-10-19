@@ -1,10 +1,11 @@
 #Librerias necesarias para el funcionamiento del programa
-import process_text
-import json
-import pandas as pd
-import re
-import math
-import subprocess
+import process_text #Clase de procesamiento de texto para los stems, stopwords y tokens
+import json #Libreria para el manejo de archivos json
+import pandas as pd #Libreria para el manejo de datos
+import re #Libreria para expresiones regulares
+import math #Libreria para operaciones matematicas
+import subprocess #Libreria para ejecutar comandos en la terminal
+from collections import Counter #Libreria para contar elementos de una lista
 
 #Funcion para cargar los datos generados por quote_spider.py
 def load_data():
@@ -37,24 +38,28 @@ def save_corpus_stems(corpus, flat_tokens):
     with open('corpus_stems.txt', 'w') as f:
             f.write(' '.join(stems))
     return stems
-#Funcion para guardar la matriz del corpus 
-def save_matrix(corpus, stems_corpus):
-    table = []
+
+
+# Función para calcular la matriz de frecuencia de términos (TF)
+def calculate_tf(corpus, stems_corpus):
+    tf_matrix = []
     for d in corpus:
-        row = dict()
-        for s in d.stems:
-            if s in stems_corpus:
-                row[s] = True
-        table.append(row)
-    return table
+        term_freq = Counter(d.stems)
+        row = [term_freq.get(s, 0) for s in stems_corpus]
+        tf_matrix.append(row)
+    return tf_matrix
+
 #Funcion para realizar la matriz tf-idf y guardar la matriz 
-def save_matrix_tf_idf(matrix, stems_corpus):
-    df = pd.DataFrame(matrix, index=range(len(matrix)), columns=stems_corpus) #Matriz de terminos
-    df = df.fillna(False) #Llenamos los valores nulos con False
-    N = len(matrix)       #Numero de documentos
-    idf = df.sum(axis=0).apply(lambda x: math.log(N / (1 + x))) 
-    tf_idf = df.apply(lambda x: x * idf, axis=1)
+def save_matrix_tf_idf(tf_matrix, stems_corpus):
+    tf_df = pd.DataFrame(tf_matrix, columns=stems_corpus)
+    N = len(tf_matrix)  # Número de documentos
+    # Calcular IDF
+    idf = tf_df.astype(bool).sum(axis=0).apply(lambda x: math.log(N / (1 + x)))
+    # Calcular TF-IDF
+    tf_idf = tf_df * idf.values
     return tf_idf, idf
+
+
 #Convertimos nuestra consulta en un vector
 def convert_query_to_vector(query, stems_corpus, idf):
     row = dict()
@@ -81,11 +86,16 @@ def main():
     tokens = save_corpus_tokens(corpus) #Guardamos los tokens
     terms = save_corpus_terms(corpus, tokens) #Guardamos los stopwords
     stems = save_corpus_stems(corpus, tokens) #Guardamos los stems
-    matrix = save_matrix(corpus, stems) #Esta matriz sirve para contar las veces que aparece cada termino en cada documento
-    tf_idf, idf = save_matrix_tf_idf(matrix, stems) #Y hacemos la matriz tf-idf
+    
+    #Esta matriz sirve para contar las veces que aparece cada termino en cada documento
+    matrix = calculate_tf(corpus, stems) 
+    #Matriz tf-idf
+    tf_idf, idf = save_matrix_tf_idf(matrix, stems) 
+    
     #Guardamos la matriz tf-idf en un archivo csv
     tf_idf.to_csv('tf_idf.csv', index=False)
     print(tf_idf)
+    
     k = 3   #Numero de clusters
     query = "I have not failed. I've just found 10,000 ways that won't work.".lower().strip()
     query = re.split(r"[^a-z0-9]+", query) 
