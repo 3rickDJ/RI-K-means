@@ -4,6 +4,7 @@ import json
 import pandas as pd
 import re
 import math
+import subprocess
 
 #Funcion para cargar los datos generados por quote_spider.py
 def load_data():
@@ -15,7 +16,6 @@ def load_data():
         process_data = process_text.ProcessData(i['url'], i['content'])
         corpus.append(process_data)
     return corpus
-
 #Funcion para guardar los tokens del corpus
 def save_corpus_tokens(corpus):
     corpus_tokens = [d.tokens for d in corpus] #Lista de tokens de cada documento
@@ -55,7 +55,6 @@ def save_matrix_tf_idf(matrix, stems_corpus):
     idf = df.sum(axis=0).apply(lambda x: math.log(N / (1 + x))) 
     tf_idf = df.apply(lambda x: x * idf, axis=1)
     return tf_idf, idf
-
 #Convertimos nuestra consulta en un vector
 def convert_query_to_vector(query, stems_corpus, idf):
     row = dict()
@@ -65,10 +64,19 @@ def convert_query_to_vector(query, stems_corpus, idf):
 
     row = pd.DataFrame([row], columns=stems_corpus).fillna(0).apply(lambda x: x * idf, axis = 1)
     return row
-
+#Prueba para ejecutar el programa de crawler en la funcion main
+def Process_Script():
+    try:
+        # Llama al comando utilizando subprocess
+        subprocess.run(["scrapy", "crawl", "quotes", "-O", "quotes.json"], check=True)
+        print("Scraper ejecutado exitosamente.")
+    except subprocess.CalledProcessError as e:
+        print("Error al ejecutar el scraper:", e)
 
 #Funcion principal
 def main():
+    #Llamamos al proceso
+    Process_Script()
     corpus = load_data() #Cargamos los datos
     tokens = save_corpus_tokens(corpus) #Guardamos los tokens
     terms = save_corpus_terms(corpus, tokens) #Guardamos los stopwords
@@ -90,10 +98,7 @@ def main():
     tf_idf_query.to_csv('tf_idf.csv', index=False)
     print(tf_idf_query)
 
-
-
     print("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
 
-
 if __name__ == "__main__":
-    main()
+    main() 
