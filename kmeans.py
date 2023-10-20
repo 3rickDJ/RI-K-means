@@ -29,28 +29,49 @@ def kmeans(X, k, max_iter=900):
         old_labels = labels
     return centroids, labels
 
-def concat_url_labels(url_df, labels):
-    """ concatenate url and labels
+def concat_data_labels(df : pd.DataFrame, labels : np.ndarray):
+    """ concatenate data and labels
     Args:
-        url_df: url dataframe
-        labels: cluster labels
+        df: input data, shape: (n_samples, n_features)
+        labels: cluster labels for each data point, shape: (n_samples, )
     Returns:
-        url_labels: url and labels dataframe
+        df: concatenated data and labels, shape: (n_samples, n_features + 1)
     """
-    # respect index in url_df
-    url_labels = pd.concat([url_df, pd.DataFrame(labels, columns=['labels'])], axis=1)
-    return url_labels
+    df_concatenated = df.copy()
+    df_concatenated['label'] = labels
+    return df_concatenated
+def get_sorted_data(df : pd.DataFrame, label : int, point : np.ndarray):
+    """ get data sorted by distance to a given point
+    Args:
+        df: input data, shape: (n_samples, n_features)
+        label: cluster label
+        point: given point, shape: (n_features, )
+    Returns:
+        df_sorted: sorted data, shape: (n_samples, n_features + 1)
+    """
+    df_sorted = df[df['label'] == label].copy()
+    df_sorted['distance'] = np.sqrt(((df_sorted.drop(['name', 'label'], axis=1).values - point)**2).sum(axis=1))
+    df_sorted = df_sorted.sort_values(by=['distance'])
+    return df_sorted
 
-
-
+def get_point_label_of_query(df : pd.DataFrame, query : str):
+    """ get point and label of a given query
+    Args:
+        df: input data, shape: (n_samples, n_features)
+        query: query name
+    Returns:
+        point: point of the query, shape: (n_features, )
+        label: cluster label of the query
+    """
+    point = df[df['name'] == query].drop(['name', 'label'], axis=1).values[0]
+    label = df[df['name'] == query]['label'].values[0]
+    return point, label
 
 
 def main():
     # load data
-    df = pd.read_csv('query_matrix.csv', header=0)
-    url_df = df['name']
-    df = df.drop(['name'], axis=1)
-    X = df.values
+    df = pd.read_csv('query_matrix.csv', index_col=0)
+    X = df.drop(['name'], axis=1).values
     # run k-means clustering algorithm
     # import pudb; pudb.set_trace()
     centroids, labels = kmeans(X, k=3, max_iter=99999)
@@ -58,9 +79,13 @@ def main():
     print('centroids:\n', centroids)
     print('labels:\n', labels)
     # concatenate data and labels
-    url_labels = concat_url_labels(url_df, labels)
+    point, label = get_point_label_of_query(df, 'query')
+    import pudb; pudb.set_trace()
+    df = get_sorted_data(concat_data_labels(df, labels), 0, centroids[0])
     # save results
-    url_labels.to_csv('url_labels.csv', index=True)
+    df.to_csv('query_matrix_labeled.csv')
+    # for a given cluster label in sorted order using euclidean distance
+
 
 
 
