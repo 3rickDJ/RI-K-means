@@ -11,7 +11,7 @@ class QuotesSpider(scrapy.Spider):
     start_urls = ["http://quotes.toscrape.com/"]
     #Profundidad maxima
     custom_settings = {
-            'DEPTH_LIMIT': 2
+            'DEPTH_LIMIT': 1
             }
     #Funcion que se encarga de parsear la pagina, recibe la respuesta y la profundidad
     def parse(self, response, depth=1):
@@ -38,12 +38,12 @@ class QuotesSpider(scrapy.Spider):
         self.log(f"Saved file {filename}")
         hrefs = response.xpath("//a/@href").extract()
         for href in hrefs: #Para cada href en hrefs
-            url = response.urljoin(href) #Obtenemos la url y la guardamos en url  
+            url = response.urljoin(href) #Obtenemos la url y la guardamos en url
             if depth >= self.settings.getint("DEPTH_LIMIT"): #Si la profundidad es mayor o igual a la profundidad maxima
                 yield scrapy.Request(url=url, callback=self.parse_last) #Retornamos la url y la funcion parse_last
             else:
                 #Retornamos la url y la funcion parse con la profundidad aumentada en 1
-                yield scrapy.Request(url=url, callback=self.parse, cb_kwargs=dict(depth=depth+1)) 
+                yield scrapy.Request(url=url, callback=self.parse, cb_kwargs=dict(depth=depth+1))
 #Funcion que se encarga de parsear la ultima pagina, recibe la respuesta
     def parse_last(self, response):
         # Si el contenido de la pagina es html y empiza con text/html entonces guardamos la pagina

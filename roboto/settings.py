@@ -80,3 +80,12 @@ ITEM_PIPELINES = {
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+FEEDS = {
+    'items.json': {
+        'format': 'json',
+        'encoding': 'utf8',
+        'store_empty': False,
+        # 'item_classes': [RobotoItem, 'myproject.items.MyItemClass2'],
+        'indent': 4,
+    }
+}
