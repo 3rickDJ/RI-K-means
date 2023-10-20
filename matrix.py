@@ -5,7 +5,7 @@ import re
 import process_text
 import scrap
 import process_script
-
+from kmeans import *
 class SistemaDeRecuperacion:
     def __init__(self) -> None:
         ####### SCRAP
@@ -34,16 +34,15 @@ class SistemaDeRecuperacion:
         tf_idf = df[stems].mul(id_k, axis=1) #Multiplicamos la matriz tf por el idf
         self.tf_idf = tf_idf
 
-    def query(query='none', k=10):
+    def query(self, query='none', k=10):
         #################################################################################################################################
         #Consulta del usuario
-        query = 'It is our choices, Harry, that show what we truly are, far more than our abilities'
         query = re.split(r"[^a-z0-9]+", query) #Tokenizamos la consulta
         query = process_text.ProcessData('query', query) #Procesamos la consulta aplicando stopwords y stems
         #Obtenemos un vector de la consulta
-        new_row = {key: [ query.frequency.get(key, 0) ] for key in df.columns[1:]}
+        new_row = {key: [ query.frequency.get(key, 0) ] for key in self.df.columns[1:]}
         new_row['name'] = 'query' #Agregamos el nombre del documento
-        new_row = pd.DataFrame(new_row, index=[df.index.max() + 1]) #Convertimos el diccionario en un dataframe
+        new_row = pd.DataFrame(new_row, index=[self.df.index.max() + 1]) #Convertimos el diccionario en un dataframe
         new_row = new_row[self.stems].mul(self.id_k, axis=1) #Multiplicamos la matriz tf por el idf
         query_matrix = pd.concat([self.tf_idf, new_row])
         full_table = pd.merge(self.df['name'], query_matrix, left_index=True, right_index=True)
@@ -52,7 +51,7 @@ class SistemaDeRecuperacion:
         full_table.to_csv('query_matrix.csv')
 
         ##### use kmeans
-        from kmeans import *
+        
         X = full_table.drop(['name'], axis=1).values
         centroids, labels =  kmeans(X, k=3, max_iter=999)
         print('centroids:\n', centroids)
@@ -68,3 +67,4 @@ class SistemaDeRecuperacion:
         ##### get list of urls relationated
         lista = df_sorted['name'].tolist()
         print(lista[1:])
+        return lista[1:]
