@@ -1,11 +1,10 @@
 #Blueprint para organizar las rutas, render.. para renderizar plantillas HTML, request para solicitudes de clientes, redirect para redirigir al cliente con URL,
 #url_for genera URLs sin actualizarlas manualmente en el codigo, session almacena informacion de usuario de una solicitud a otra (cookies)
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from boolean_model.boolean_model import BooleanModel
-
+from matrix import SistemaDeRecuperacion
 views = Blueprint('views', __name__)
 # Instancia del modelo
-model = BooleanModel('static/repo')
+model = SistemaDeRecuperacion()
 
 @views.route('/')
 #Si el usuario visita la URL principal entonces
@@ -16,6 +15,10 @@ def index():
     #Si no esta entonces no se le asigna
     else:
         path = None
+    if 'k' in session:
+        k = session['k']
+    else:
+        k = None
     #Si el contenido esta almacenada en la sesion
     if 'result' in session:
         result = session['result']
@@ -23,7 +26,7 @@ def index():
     else:
         result = None
     #Renderizamos la plantilla index.html con su ruta y contenido
-    return render_template('index.html', path=path, result=result)
+    return render_template('index.html', path=path, result=result, k=k)
 
 # Si el usuario quiere cambiar de directorio entonces accedemos a la funcion
 #@views.route('/load_corpus', methods=['POST'])
@@ -44,12 +47,9 @@ def index():
 def search():
     #Obtenemos el valor de la consulta
     query = request.form['query']
+    k = request.form['k']
     #Con el metodo query de BooleanModel realizamos la busqueda en el corpus y lo guardamos en result
-    result = model.query(query)
-    #Iteramos sobre los elementos de la lista result y elimicamos el prefijo 'static/' de cada rut, para que sean mas entendibles hacia el usuario
-    result = [ path.replace('static/', '') for path in result ]
-    #Ahora remplazamos las barras diagonales inversas (\\) por las normales (/) para que las rutas en Windows no tengan problema
-    result = [ path.replace("\\", '/') for path in result ]
+    result = model.query(query, int(k))
     #Almacenamos el resultado de la busqueda en la sesion
     session['result'] = result
     #Redirigmos al usuario con los resultados de la busqueda puesta por el usuario

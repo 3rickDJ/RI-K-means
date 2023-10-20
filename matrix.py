@@ -53,7 +53,7 @@ class SistemaDeRecuperacion:
         ##### use kmeans
         
         X = full_table.drop(['name'], axis=1).values
-        centroids, labels =  kmeans(X, k=3, max_iter=999)
+        centroids, labels =  kmeans(X, k=k, max_iter=999)
         print('centroids:\n', centroids)
         print('labels:\n', labels)
         df = concat_data_labels(full_table, labels)
