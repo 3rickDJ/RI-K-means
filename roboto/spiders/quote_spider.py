@@ -20,7 +20,7 @@ class QuotesSpider(scrapy.Spider):
             l = ItemLoader(item=RobotoItem(), response=response)              #item es una instancia de RobotoItem que se encarga de guardar los datos
             l.add_value("url", response.url)                                  #Obtenemos la url de la pagina
             l.add_value("content", response.text)                             #Obtenemos el contenido de la pagina
-            l.add_value("depth", depth)                                       #Obtenemos la profundidad de la pagina
+            # l.add_value("depth", depth)                                       #Obtenemos la profundidad de la pagina
             item = l.load_item()                                              #Cargamos el item
             self.log(f"Got successful response from {response.url} 📀  {depth}") #Imprimimos en consola que se obtuvo una respuesta exitosa
             yield item                                                      #Retornamos el item
@@ -53,7 +53,7 @@ class QuotesSpider(scrapy.Spider):
             l = ItemLoader(item=RobotoItem(), response=response)
             l.add_value("url", response.url)
             l.add_value("content", response.text)
-            l.add_value("depth", max_depth)
+            # l.add_value("depth", max_depth)
             #Retornamos el item
             self.log(f"Got successful response from {response.url} 📀  {max_depth}")
             item = l.load_item()
