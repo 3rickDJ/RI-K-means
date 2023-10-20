@@ -11,7 +11,7 @@ stems = df.columns[1:] #Terminos EXCEPTO el nombre del documento
 results = pd.DataFrame([], columns=df.columns) #Dataframe para guardar los resultados
 
 #Funcion para determinar si un termino esta presente en un documento
-def is_present(column, number=0): 
+def is_present(column, number=0):
     return (column > number).sum() #Si la frecuencia es mayor a 0, entonces esta presente
 
 n_k = df.drop(columns='name').apply(is_present) #Numero de documentos en los que aparece cada termino
@@ -24,8 +24,13 @@ query = 'It is our choices, Harry, that show what we truly are, far more than ou
 query = re.split(r"[^a-z0-9]+", query) #Tokenizamos la consulta
 query = process_text.ProcessData('query', query) #Procesamos la consulta aplicando stopwords y stems
 #Obtenemos un vector de la consulta
-new_row = {key: [ query.frequency.get(key, 0) ] for key in df.columns[1:]} 
+new_row = {key: [ query.frequency.get(key, 0) ] for key in df.columns[1:]}
 new_row['name'] = 'query' #Agregamos el nombre del documento
-new_row = pd.DataFrame(new_row) #Convertimos el diccionario en un dataframe
+new_row = pd.DataFrame(new_row, index=[df.index.max() + 1]) #Convertimos el diccionario en un dataframe
 new_row = new_row[stems].mul(id_k, axis=1) #Multiplicamos la matriz tf por el idf
-pd.concat([tf_idf, new_row]) #Concatenamos la matriz tf-idf con el vector de la consulta
+query_matrix = pd.concat([tf_idf, new_row])
+full_table = pd.merge(df['name'], query_matrix, left_index=True, right_index=True)
+new_row['name'] = 'query'
+full_table = pd.concat([full_table, new_row])
+full_table.to_csv('query_matrix.csv')
+
