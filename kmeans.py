@@ -29,29 +29,27 @@ def kmeans(X, k, max_iter=900):
         old_labels = labels
     return centroids, labels
 
-def concat_data_and_labels(X, labels):
-    """ concatenate data and labels
+def concat_url_labels(url_df, labels):
+    """ concatenate url and labels
     Args:
-        X: input data, shape: (n_samples, n_features)
-        labels: cluster labels for each data point, shape: (n_samples, )
+        url_df: url dataframe
+        labels: cluster labels
     Returns:
-        data_and_labels: data and labels, shape: (n_samples, n_features+1)
+        url_labels: url and labels dataframe
     """
-    data_and_labels = np.concatenate((X, labels[:, np.newaxis]), axis=1)
-    return data_and_labels
-def data_and_labels_to_df(data_and_labels):
-    """ convert data and labels to dataframe
-    Args:
-        data_and_labels: data and labels, shape: (n_samples, n_features+1)
-    Returns:
-        df: dataframe
-    """
-    df = pd.DataFrame(data_and_labels)
-    return df
+    # respect index in url_df
+    url_labels = pd.concat([url_df, pd.DataFrame(labels, columns=['labels'])], axis=1)
+    return url_labels
+
+
+
+
 
 def main():
     # load data
     df = pd.read_csv('query_matrix.csv', header=0)
+    url_df = df['name']
+    df = df.drop(['name'], axis=1)
     X = df.values
     # run k-means clustering algorithm
     # import pudb; pudb.set_trace()
@@ -60,12 +58,10 @@ def main():
     print('centroids:\n', centroids)
     print('labels:\n', labels)
     # concatenate data and labels
-    data_and_labels = concat_data_and_labels(X, labels)
-    # convert data and labels to dataframe
-    df = data_and_labels_to_df(data_and_labels)
-    print('df:\n', df)
+    url_labels = concat_url_labels(url_df, labels)
     # save results
-    print('data_and_labels:\n', data_and_labels)
+    url_labels.to_csv('url_labels.csv', index=True)
+
 
 
 
