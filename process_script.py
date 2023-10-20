@@ -4,7 +4,6 @@ import json #Libreria para el manejo de archivos json
 import pandas as pd #Libreria para el manejo de datos
 import re #Libreria para expresiones regulares
 import math #Libreria para operaciones matematicas
-import subprocess #Libreria para ejecutar comandos en la terminal
 from collections import Counter #Libreria para contar elementos de una lista
 
 #Funcion para cargar los datos generados por quote_spider.py
@@ -42,12 +41,17 @@ def save_corpus_stems(corpus, flat_tokens):
 
 # Función para calcular la matriz de frecuencia de términos (TF)
 def calculate_tf(corpus, stems_corpus):
-    tf_matrix = []
-    for d in corpus:
-        term_freq = Counter(d.stems)
-        row = [term_freq.get(s, 0) for s in stems_corpus]
+    tf_matrix = [['name'] + stems_corpus]
+    for doc in corpus:
+        row = [doc.url]
+        for s in stems_corpus:
+            if s in doc.frequency.keys():
+                row.append(doc.frequency[s])
+            else:
+                row.append(0)
         tf_matrix.append(row)
-    return tf_matrix
+    tf_df = pd.DataFrame(tf_matrix[1:], columns=[tf_matrix[0]])
+    return tf_df
 
 #Funcion para realizar la matriz tf-idf y guardar la matriz
 def save_matrix_tf_idf(tf_matrix, stems_corpus):
@@ -80,6 +84,8 @@ def main():
 
     #Esta matriz sirve para contar las veces que aparece cada termino en cada documento
     matrix = calculate_tf(corpus, stems)
+    print(matrix)
+    matrix.to_csv('tf.csv', index=False) #Guardamos la matriz en un archivo csv
     #Matriz tf-idf
     tf_idf, idf = save_matrix_tf_idf(matrix, stems)
 
@@ -90,8 +96,6 @@ def main():
     k = 3   #Numero de clusters
     query = "I have not failed. I've just found 10,000 ways that won't work.".lower().strip()
     query = re.split(r"[^a-z0-9]+", query)
-    # import dbg
-    #import pudb; pudb.set_trace()
     query = process_text.ProcessData('query', query) #Procesamos la consulta aplicando stopwords y stems
     query_vector = convert_query_to_vector(query, stems, idf) #Obtenemos un vector de la consulta
     tf_idf_query = pd.concat([tf_idf, query_vector], ignore_index=True) #Concatenamos la matriz tf-idf con el vector de la consulta

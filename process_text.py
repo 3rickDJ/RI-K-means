@@ -29,9 +29,23 @@ def stem(cleaned_terms):
     # Configuramos el stemmer en español
     stemmer = SnowballStemmer("spanish")
     #Aplicamos los stems
-    stems = set( [stemmer.stem(t) for t in cleaned_terms] )
+    stems = [stemmer.stem(t) for t in cleaned_terms]
     return stems
 
+def get_frequency(stems):
+    #Creamos un diccionario vacio
+    frequency = {}
+    #Recorremos los stems
+    for stem in stems:
+        #Si el stem esta en el diccionario
+        if stem in frequency:
+            #Aumentamos su frecuencia
+            frequency[stem] += 1
+        else:
+            #Si no esta lo agregamos
+            frequency[stem] = 1
+    #Regresamos el diccionario
+    return frequency
 
 #Funcion para encapsular el procesamiento de datos para un documento
 class ProcessData():
@@ -40,6 +54,7 @@ class ProcessData():
         self.url = url
         self.tokens = tokens
         self.stems = self.get_stems()
+        self.frequency = get_frequency(self.stems)
     #Procedimiento para obtener los stems del documento
     def get_stems(self):
         self.terms = remove_stop_words(self.tokens)
