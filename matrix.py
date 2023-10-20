@@ -55,3 +55,6 @@ df_sorted = df_sorted[ df_sorted['label'] == label ]
 # save results
 df_sorted.to_csv('query_matrix_sorted.csv')
 df.to_csv('query_matrix_labeled.csv')
+##### get list of urls relationated
+lista = df_sorted['name'].tolist()
+print(lista[1:])
