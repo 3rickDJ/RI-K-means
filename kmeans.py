@@ -79,10 +79,13 @@ def main():
     print('centroids:\n', centroids)
     print('labels:\n', labels)
     # concatenate data and labels
+    df = concat_data_labels(df, labels)
+    # get sorted data
     point, label = get_point_label_of_query(df, 'query')
-    import pudb; pudb.set_trace()
-    df = get_sorted_data(concat_data_labels(df, labels), 0, centroids[0])
+    df_sorted = get_sorted_data(df, label, point)
+    df_sorted = df_sorted[ df_sorted['label'] == label ]
     # save results
+    df_sorted.to_csv('query_matrix_sorted.csv')
     df.to_csv('query_matrix_labeled.csv')
     # for a given cluster label in sorted order using euclidean distance
 
