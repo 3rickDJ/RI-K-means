@@ -87,21 +87,21 @@ def main():
     print(matrix)
     matrix.to_csv('tf.csv', index=False) #Guardamos la matriz en un archivo csv
     #Matriz tf-idf
-    tf_idf, idf = save_matrix_tf_idf(matrix, stems)
+    # tf_idf, idf = save_matrix_tf_idf(matrix, stems)
 
     #Guardamos la matriz tf-idf en un archivo csv
-    tf_idf.to_csv('tf_idf.csv', index=False)
-    print(tf_idf)
+    # tf_idf.to_csv('tf_idf.csv', index=False)
+    # print(tf_idf)
 
-    k = 3   #Numero de clusters
-    query = "I have not failed. I've just found 10,000 ways that won't work.".lower().strip()
-    query = re.split(r"[^a-z0-9]+", query)
-    query = process_text.ProcessData('query', query) #Procesamos la consulta aplicando stopwords y stems
-    query_vector = convert_query_to_vector(query, stems, idf) #Obtenemos un vector de la consulta
-    tf_idf_query = pd.concat([tf_idf, query_vector], ignore_index=True) #Concatenamos la matriz tf-idf con el vector de la consulta
+    # k = 3   #Numero de clusters
+    # query = "I have not failed. I've just found 10,000 ways that won't work.".lower().strip()
+    # query = re.split(r"[^a-z0-9]+", query)
+    # query = process_text.ProcessData('query', query) #Procesamos la consulta aplicando stopwords y stems
+    # query_vector = convert_query_to_vector(query, stems, idf) #Obtenemos un vector de la consulta
+    # tf_idf_query = pd.concat([tf_idf, query_vector], ignore_index=True) #Concatenamos la matriz tf-idf con el vector de la consulta
     #Sobreescribimos la matriz tf-idf en un archivo csv
-    tf_idf_query.to_csv('tf_idf.csv', index=False)
-    print(tf_idf_query)
+    # tf_idf_query.to_csv('tf_idf.csv', index=False)
+    # print(tf_idf_query)
 
     print("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
 

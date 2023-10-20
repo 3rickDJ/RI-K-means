@@ -18,7 +18,7 @@ n_k = df.drop(columns='name').apply(is_present) #Numero de documentos en los que
 
 id_k = np.log2(N/n_k) #Aplicamos la funcion para calcular el idf
 tf_idf = df[stems].mul(id_k, axis=1) #Multiplicamos la matriz tf por el idf
-
+#################################################################################################################################
 #Consulta del usuario
 query = 'It is our choices, Harry, that show what we truly are, far more than our abilities'
 query = re.split(r"[^a-z0-9]+", query) #Tokenizamos la consulta
@@ -33,4 +33,3 @@ full_table = pd.merge(df['name'], query_matrix, left_index=True, right_index=Tru
 new_row['name'] = 'query'
 full_table = pd.concat([full_table, new_row])
 full_table.to_csv('query_matrix.csv')
-
