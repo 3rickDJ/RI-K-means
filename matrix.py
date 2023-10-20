@@ -1,3 +1,10 @@
+####### SCRAP
+import scrap
+scrap.scrap() # da el items.json
+######## Process Text
+import process_script
+process_script.main() # da el tf.csv 
+########
 import pandas as pd
 import numpy as np
 import matplotlib as plt
@@ -33,3 +40,18 @@ full_table = pd.merge(df['name'], query_matrix, left_index=True, right_index=Tru
 new_row['name'] = 'query'
 full_table = pd.concat([full_table, new_row])
 full_table.to_csv('query_matrix.csv')
+
+##### use kmeans
+from kmeans import *
+X = full_table.drop(['name'], axis=1).values
+centroids, labels =  kmeans(X, k=3, max_iter=999)
+print('centroids:\n', centroids)
+print('labels:\n', labels)
+df = concat_data_labels(full_table, labels)
+# get sorted data
+point, label = get_point_label_of_query(df, 'query')
+df_sorted = get_sorted_data(df, label, point)
+df_sorted = df_sorted[ df_sorted['label'] == label ]
+# save results
+df_sorted.to_csv('query_matrix_sorted.csv')
+df.to_csv('query_matrix_labeled.csv')
