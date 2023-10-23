@@ -5,6 +5,7 @@ import os
 
 def scrap():
     if os.path.exists('items.json'):
+        return
         os.remove('items.json')
     process = CrawlerProcess(get_project_settings())
     process.crawl('quotes')

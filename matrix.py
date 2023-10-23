@@ -11,8 +11,8 @@ class SistemaDeRecuperacion:
         ####### SCRAP
         scrap.scrap() # da el items.json
         ######## Process Text
-        
-        process_script.main() # da el tf.csv 
+
+        process_script.main() # da el tf.csv
         ########
 
         #Cargar la matriz tf-idf
@@ -21,7 +21,6 @@ class SistemaDeRecuperacion:
         N = df.shape[0] # N
         stems = df.columns[1:] #Terminos EXCEPTO el nombre del documento
         self.stems = stems
-        results = pd.DataFrame([], columns=df.columns) #Dataframe para guardar los resultados
 
         #Funcion para determinar si un termino esta presente en un documento
         def is_present(column, number=0):
@@ -51,11 +50,13 @@ class SistemaDeRecuperacion:
         full_table.to_csv('query_matrix.csv')
 
         ##### use kmeans
-        
+
         X = full_table.drop(['name'], axis=1).values
+        # import pudb; pudb.set_trace()
         centroids, labels =  kmeans(X, k=k, max_iter=999)
         print('centroids:\n', centroids)
         print('labels:\n', labels)
+        # import pudb; pudb.set_trace()
         df = concat_data_labels(full_table, labels)
         # get sorted data
         point, label = get_point_label_of_query(df, 'query')
@@ -68,3 +69,8 @@ class SistemaDeRecuperacion:
         lista = df_sorted['name'].tolist()
         print(lista[1:])
         return lista[1:]
+
+if __name__ == "__main__":
+    sistema = SistemaDeRecuperacion()
+    # import pudb; pudb.set_trace()
+    sistema.query('Rowling')

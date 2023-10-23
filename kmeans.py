@@ -13,6 +13,7 @@ def kmeans(X, k, max_iter=900):
         centroids: cluster centroids, shape: (k, n_features)
         labels: cluster labels for each data point, shape: (n_samples, )
     """
+    # import pudb; pudb.set_trace()
     centroids = X[np.random.choice(X.shape[0], k, replace=False)]
     labels = np.zeros(X.shape[0])
     old_labels = None
@@ -22,12 +23,26 @@ def kmeans(X, k, max_iter=900):
         # assign each data point to the closest centroid
         labels = np.argmin(distances, axis=0)
         # update centroids
-        centroids = np.array([X[labels == i].mean(axis=0) for i in range(k)])
+        centroids = update_centroids(X, labels, k)
+        # no hay centroides con valores nullos o vac'ios
+        assert np.isnan(centroids).any() == False
         # check if converged
         if old_labels is not None and np.array_equal(labels, old_labels):
             return centroids, labels
         old_labels = labels
     return centroids, labels
+
+def update_centroids(X, labels, k):
+    """ update centroids
+        if there are not elements in a cluster, set the centroid to be the fartherst point from any cluster
+    """
+    centroids = np.array([X[labels == i].mean(axis=0) for i in range(k)])
+    for i in range(k):
+        if len(X[labels == i]) == 0:
+            distances = np.sqrt(((X - centroids[:, np.newaxis])**2).sum(axis=2))
+            centroids[i] = X[np.argmax(distances[:, i])]
+    return centroids
+
 
 def concat_data_labels(df : pd.DataFrame, labels : np.ndarray):
     """ concatenate data and labels
@@ -51,7 +66,7 @@ def get_sorted_data(df : pd.DataFrame, label : int, point : np.ndarray):
     """
     df_sorted = df[df['label'] == label].copy()
     df_sorted['distance'] = np.sqrt(((df_sorted.drop(['name', 'label'], axis=1).values - point)**2).sum(axis=1))
-    df_sorted = df_sorted.sort_values(by=['distance'])
+    df_sorted = df_sorted.sort_values(by=['distance'], ascending=True)
     return df_sorted
 
 def get_point_label_of_query(df : pd.DataFrame, query : str):
@@ -68,13 +83,14 @@ def get_point_label_of_query(df : pd.DataFrame, query : str):
     return point, label
 
 
-def main():
+def main(k=5):
+    # import pudb; pudb.set_trace()
     # load data
     df = pd.read_csv('query_matrix.csv', index_col=0)
     X = df.drop(['name'], axis=1).values
     # run k-means clustering algorithm
     # import pudb; pudb.set_trace()
-    centroids, labels = kmeans(X, k=3, max_iter=99999)
+    centroids, labels = kmeans(X, k=k, max_iter=99999)
     # print results
     print('centroids:\n', centroids)
     print('labels:\n', labels)
@@ -106,5 +122,5 @@ def test_setosa():
 
 if __name__ == '__main__':
     main()
-    # print('test_setosa:')
-    # test_setosa()
+    print('test_setosa:')
+    test_setosa()
