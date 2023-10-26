@@ -46,7 +46,7 @@ def calculate_tf(corpus, stems_corpus):
         row = [doc.url]
         for s in stems_corpus:
             if s in doc.frequency.keys():
-                row.append(doc.frequency[s])
+                row.append(1)
             else:
                 row.append(0)
         tf_matrix.append(row)
@@ -84,8 +84,8 @@ def main():
 
     #Esta matriz sirve para contar las veces que aparece cada termino en cada documento
     matrix = calculate_tf(corpus, stems)
-    print(matrix)
     matrix.to_csv('tf.csv', index=False) #Guardamos la matriz en un archivo csv
+    return matrix
     #Matriz tf-idf
     # tf_idf, idf = save_matrix_tf_idf(matrix, stems)
 
@@ -102,8 +102,6 @@ def main():
     #Sobreescribimos la matriz tf-idf en un archivo csv
     # tf_idf_query.to_csv('tf_idf.csv', index=False)
     # print(tf_idf_query)
-
-    print("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
 
 if __name__ == "__main__":
     main()
