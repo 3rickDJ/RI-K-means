@@ -218,3 +218,4 @@ $RECYCLE.BIN/
 corpus_*.txt
 query_matrix*.csv
 items.json
+tf.csv
