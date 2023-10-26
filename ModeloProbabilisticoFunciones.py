@@ -2,13 +2,13 @@ import pandas as pd
 import numpy as np
 import process_text
 import re
-
+#Funcion para calcular los vectores pj y qj por medio de la matriz booleana
 def get_pj_qj(boolean_matrix: pd.DataFrame)-> tuple:
     row_size = boolean_matrix.shape[1]
     pj = np.full((row_size), 0.5)
     qj = np.array(boolean_matrix.sum(axis=0) / row_size)
     return pj, qj
-
+#Funcion para hacer de nuestra consulta un vector con tamañao igual al de la matriz booleana
 def vector_consulta(consulta, corpus_stems):
     tokens = re.split(r"[^a-z0-9]+", consulta)
     query_data = process_text.ProcessData('query', tokens)
@@ -19,14 +19,14 @@ def vector_consulta(consulta, corpus_stems):
         else:
             vector_query.append(0)
     return np.array(vector_query)
-
+#Funcion para calcular la semejanza entre la consulta y los documentos
 def get_sem_table(consulta_vector, boolean_matrix):
     q = consulta_vector
     pj, qj = get_pj_qj(boolean_matrix)
     semejanza = ( (q * boolean_matrix) *  np.log10((  pj*(1-qj)  )/ (  qj*(1-pj)  )) ).sum(axis=1)
     return semejanza
 
-
+#Funcion para obtener el resultado de la consulta y ordenar los documentos de mayor a menor semejanza
 def get_result(query_raw: str, boolean_matrix: pd.DataFrame) -> list:
     #### hacer vector query
     corpus_stems = boolean_matrix.columns[1:]
