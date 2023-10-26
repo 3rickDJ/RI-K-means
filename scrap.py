@@ -11,3 +11,4 @@ def scrap():
     process.crawl('quotes')
     process.start() # the script will block here until the crawling is finished
     items = json.load(open('items.json'))
+    return items
