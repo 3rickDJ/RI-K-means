@@ -2,9 +2,7 @@
 import process_text #Clase de procesamiento de texto para los stems, stopwords y tokens
 import json #Libreria para el manejo de archivos json
 import pandas as pd #Libreria para el manejo de datos
-import re #Libreria para expresiones regulares
 import math #Libreria para operaciones matematicas
-from collections import Counter #Libreria para contar elementos de una lista
 
 #Funcion para cargar los datos generados por quote_spider.py
 def load_data():

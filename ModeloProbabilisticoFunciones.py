@@ -43,6 +43,7 @@ def get_result(query_raw: str, boolean_matrix: pd.DataFrame) -> list:
 
 def main():
     boolean_matrix = pd.read_csv('tf.csv')
+    import pudb; pudb.set_trace()
     consulta_raw = 'In 1879, Albert Einstein was born in Ulm, Germany. He completed his Ph.D. at the University of Zurich by 1909. His 1905 paper explaining the photoelectric effect, the basis of electronics, earned him the Nobel Prize in 1921. His first paper on Special Relativity Theory, also published in 1905, changed the world.'
     # consulta_raw2 = "The Wizard of Menlo Park (now Edison, New Jersey) by a newspaper reporter"
     resultado = get_result( consulta_raw, boolean_matrix )
