@@ -24,17 +24,26 @@
             {% endif %}
             -->
             {% if result %}
-                <h1 class="display-4">Lista de Documentos</h1>
-                <div class="list-group">
-                    {% for file in result %}
-                        <a href="{{ file }}" target="_blank" class="list-group-item list-group-item-success">{{ file }}</a>
-                    {% endfor %}
-                </div>
+            <div class="container text-center">
+				 <div class="row gy-5">
+					<div class="col-8">
+						<h1 class="display-4">Lista de Documentos</h1>
+						<div class="list-group">
+							{% for file in result %}
+								<a href="{{ file }}" target="_blank" class="list-group-item list-group-item-success">{{ file }}</a>
+							{% endfor %}
+						</div>
+					</div>
+					<div class="col-4">
+						<h1 class="display-4">Dendograma</h1>
+						<img src="{{url_for('static', filename='dendrograma.jpg')}}" align="middle" />
+					</div>
+				  </div>
+            </div>
             {% else %}
                 <div class="alert alert-warning" role="alert">
                     Sin resultados
                 </div>
-
             {% endif %}
 
     </div>
