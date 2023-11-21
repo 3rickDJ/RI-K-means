@@ -1,7 +1,7 @@
 import scrap
 import process_script
 import pandas as pd
-from ModeloProbabilisticoFunciones import get_result
+from MODELO_WARD import get_result
 class SistemaDeRecuperacion:
     def __init__(self) -> None:
         ####### SCRAP
