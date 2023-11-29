@@ -9,16 +9,6 @@ model = SistemaDeRecuperacion()
 @views.route('/')
 #Si el usuario visita la URL principal entonces
 def index():
-    #Verificamos si la ruta esta presente en la sesion
-    if 'path' in session:
-        path = session['path']
-    #Si no esta entonces no se le asigna
-    else:
-        path = None
-    if 'k' in session:
-        k = session['k']
-    else:
-        k = None
     #Si el contenido esta almacenada en la sesion
     if 'result' in session:
         result = session['result']
@@ -26,7 +16,7 @@ def index():
     else:
         result = None
     #Renderizamos la plantilla index.html con su ruta y contenido
-    return render_template('index.html', path=path, result=result, k=k)
+    return render_template('index.html', result=result)
 
 # Si el usuario quiere cambiar de directorio entonces accedemos a la funcion
 #@views.route('/load_corpus', methods=['POST'])
@@ -47,9 +37,8 @@ def index():
 def search():
     #Obtenemos el valor de la consulta
     query = request.form['query']
-    k = request.form['k']
     #Con el metodo query de BooleanModel realizamos la busqueda en el corpus y lo guardamos en result
-    result = model.query(query, int(k))
+    result = model.query(query)
     #Almacenamos el resultado de la busqueda en la sesion
     session['result'] = result
     #Redirigmos al usuario con los resultados de la busqueda puesta por el usuario
