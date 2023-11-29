@@ -5,7 +5,7 @@ import re
 import process_text
 import scrap
 import process_script
-from kmeans import *
+from Modelo_Vectorial import *
 class SistemaDeRecuperacion:
     def __init__(self) -> None:
         ####### SCRAP
@@ -15,7 +15,7 @@ class SistemaDeRecuperacion:
         process_script.main() # da el tf.csv
         ########
 
-        #Cargar la matriz tf-idf
+        #Cargar la matriz tf (term frequency)
         df = pd.read_csv('tf.csv')
         self.df = df
         N = df.shape[0] # N
@@ -32,8 +32,9 @@ class SistemaDeRecuperacion:
         self.id_k = id_k
         tf_idf = df[stems].mul(id_k, axis=1) #Multiplicamos la matriz tf por el idf
         self.tf_idf = tf_idf
+        tf_idf.to_csv('tf_idf.csv')
 
-    def query(self, query='none', k=10):
+    def query(self, query='none'):
         #################################################################################################################################
         #Consulta del usuario
         query = re.split(r"[^a-z0-9]+", query) #Tokenizamos la consulta
@@ -48,27 +49,7 @@ class SistemaDeRecuperacion:
         new_row['name'] = 'query'
         full_table = pd.concat([full_table, new_row])
         full_table.to_csv('query_matrix.csv')
-
-        ##### use kmeans
-
-        X = full_table.drop(['name'], axis=1).values
-        # import pudb; pudb.set_trace()
-        centroids, labels =  kmeans(X, k=k, max_iter=999)
-        print('centroids:\n', centroids)
-        print('labels:\n', labels)
-        # import pudb; pudb.set_trace()
-        df = concat_data_labels(full_table, labels)
-        # get sorted data
-        point, label = get_point_label_of_query(df, 'query')
-        df_sorted = get_sorted_data(df, label, point)
-        df_sorted = df_sorted[ df_sorted['label'] == label ]
-        # save results
-        df_sorted.to_csv('query_matrix_sorted.csv')
-        df.to_csv('query_matrix_labeled.csv')
-        ##### get list of urls relationated
-        lista = df_sorted['name'].tolist()
-        print(lista[1:])
-        return lista[1:]
+        return getresult()
 
 if __name__ == "__main__":
     sistema = SistemaDeRecuperacion()
